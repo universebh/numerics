@@ -1,0 +1,6 @@
+define(f x y) = (+ x y)
+test(f 1 5) 6
+test(f 1 5) 6.0
+test(f 5 2) 5.5
+define(g xy) = (+ x y) #attempt to consiter g as g(x y) = (x + y)
+

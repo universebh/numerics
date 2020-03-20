@@ -1,0 +1,4 @@
+define(f x y) = (* x y)
+define(g a b) = (/ a b)
+
+test(g (g (f a b) 10) ) 10

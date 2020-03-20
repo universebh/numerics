@@ -1,0 +1,4 @@
+test(ln 1) 0
+test(ln 2.78) 1
+test(ln 10) 3
+test(ln 0) 1

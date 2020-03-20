@@ -1,0 +1,17 @@
+define(f x y) = (+ x y)		#'define('
+define (  g     c d  ) = (  + c  d )	#arbitary spaces
+define (   p a b      c    )=      (  + (+c      3)  (  %b      a  )  )
+define ( n p   q)     =(   +(  *  (/p  10  )   q)     (  -   q   (  / p  q ) ) )
+define( w x )=x		#')=x' is allowed
+
+#split
+
+define ( h i j) = (/i j)   #'/i' is allowed
+define ( i j k) = (*k j)
+define (j k l  ) = (-k l)
+define ( m n p) = (+n p)
+define (q s t) = (%s t)
+
+define(func pa pbb pccc) = (/(%pa   pbb)   (/10    (   *  pccc  pa  ) ) )
+define(funca paa pbbb pcccc) = (/ (*paa pbbb) (/10 (*  pcccc paa) ) )
+

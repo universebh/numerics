@@ -1,0 +1,4 @@
+define(f x y) = (+ (sin x) (* y (cos x) ))
+define(g x y) = (+ x x)
+test (g (sqrt 16) 3.2) 8
+test (f (g 3.2 1) 6.28 ) 1.5

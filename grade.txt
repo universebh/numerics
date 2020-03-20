@@ -1,0 +1,3 @@
+Grade: 90.5
+Comments:
+Helpful comments. Functions should be able to call other functions, either built in or user-defined, without using hardcoded values as input to those functions. Exits cleanly even on errors. Good job!

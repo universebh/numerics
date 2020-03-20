@@ -1,0 +1,3 @@
+define (modulo arga argb) = ( % arga  argb  )
+test   (modulo 9.0000000000001 2.0000000000001) 1
+test   (modulo 9.000000000001 2.000000000001) 1

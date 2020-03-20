@@ -1,0 +1,1321 @@
+By running './numerics' you can directly input commands in stdin, while running
+'./numerics filename' the program will read each line of the file as a command and
+print both of the command and output to stdin.
+
+(1) Run ./numerics ./testcases/input1.txt
+    You will see that it prints something like this:
+    
+    define (f x y) = (x y)
+    Illegal func def: undefined operator or function 'x' on rhs
+    Could not parse expression.
+    
+    , which is correct because it lacks an operator on the left of 'x'.
+
+(2) Run ./numerics ./testcases/input2.txt
+    You will see that it prints something like this:
+
+    define(f x y) = (+ x y
+    Illegal func def: on rhs expected ) but found 
+    Could not parse expression.
+
+    , which is correct because it lacks an right parenthesis on the right of 'y'.
+
+(3) Run ./numerics ./testcases/input3.txt
+    You will see that it prints something like this:
+
+    define (f x y) = + x y
+    Illegal func def error: unknown operand '+'
+    Could not parse expression.
+
+    , which is correct because this expression must be covered by a pair of
+    parenthesis.
+
+(4) Run ./numerics ./testcases/input4.txt
+    You will see that it prints something like this:
+
+    define (f x) = x
+    defined f(x)
+    define (g x) = 92.5
+    defined g(x)
+    define (h x) = (x)
+    Illegal func def: invalid func call on rhs. expected a space but found )
+
+    , which is correct because:
+    a. Expressions with only a single parameter or number should not be convered with
+       a pair of parenthesis.
+    b. A function defined by an expression without the function's parameter(s) is allowed.
+    
+(5) Run ./numerics ./testcases/input5.txt
+    You will see that it prints something like this:
+
+    define(f x y) = (+ x y)		#'define('
+    defined f(x y)
+    define (  g     c d  ) = (  + c  d )	#arbitary spaces
+    defined g(c d)
+    define (   p a b      c    )=      (  + (+c      3)  (  %b      a  )  )
+    defined p(a b c)
+    define ( n p   q)     =(   +(  *  (/p  10  )   q)     (  -   q   (  / p  q ) ) )
+    defined n(p q)
+    define( w x )=x		#')=x' is allowed
+    defined w(x)
+
+    #split
+
+    define ( h i j) = (/i j)   #'/i' is allowed
+    defined h(i j)
+    define ( i j k) = (*k j)
+    defined i(j k)
+    define (j k l  ) = (-k l)
+    defined j(k l)
+    define ( m n p) = (+n p)
+    defined m(n p)
+    define (q s t) = (%s t)
+    defined q(s t)
+
+    define(func pa pbb pccc) = (/(%pa   pbb)   (/10    (   *  pccc  pa  ) ) )
+    defined func(pa pbb pccc)
+    define(funca paa pbbb pcccc) = (/ (*paa pbbb) (/10 (*  pcccc paa) ) )
+    defined funca(paa pbbb pcccc)
+
+    , which is correct because:
+    a. '#' is a sign which starts a comment, so it should not be considered as any command
+       in this probram and should be ignored by the parser.
+    b. A empty line (start with '\0' or only contains spaces) should be ignored by the parser.
+    c. In a define command, arbitary spaces in an expression is allowd.
+    d. In a define command, function name/parameter name with arbitary number of characters is
+       allowed
+
+(6) Run ./numerics ./testcases/input6.txt
+    You will see that it prints something like this:
+    
+    define (f1 x y) = (+ x y)
+    Illegal func def: '1' is not alphabet
+    Could not parse expression.
+
+    , which is correct because function name should only contains alphabet characters.
+
+(7) Run ./numerics ./testcases/input7.txt
+    You will see that it prints something like this:
+    
+    define(f&%^ x y) = (+ x y)
+    Illegal func def: '&' is not alphabet
+    Could not parse expression.
+
+    , which is correct because function name should only contains alphabet characters.
+
+(8) Run ./numerics ./testcases/input8.txt
+    You will see that it prints something like this:
+
+    define(func x1 x2) = (+ x1 x2)
+    Illegal func def: '1' is not alphabet
+    Could not parse expression.
+
+    , which is correct because parameter name should only contains alphabet characters.
+
+(9) Run ./numerics ./testcases/input9.txt
+    You will see that it prints something like this:
+
+    define(f x y**) = (+ x y** )
+    Illegal func def: '*' is not alphabet
+    Could not parse expression.
+
+    , which is correct because parameter name should only contains alphabet characters.
+
+(10) Run ./numerics ./testcases/input10.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ x y)
+     defined f(x y)
+     define(f z w) = (* (/ z 10) w)
+     Illegal func def: found collision function id 'f'
+     Could not parse expression.
+
+     , which is correct because function should not be re-defined.
+
+(11) Run ./numerics ./testcases/input11.txt
+     You will see that it prints something like this:
+
+     define(sin x) = (/ (sin x) x)
+     Illegal func def: found collision function id 'sin'
+     Could not parse expression.
+
+     , which is correct because function should not be re-defined.
+
+(12) Run ./numerics ./testcases/input12.txt
+     You will see that it prints something like this:
+
+     define(f x x) = (* x x)
+     Illegal func def: input repeated parameter(s)
+     Could not parse expression.
+
+     , which is correct because define a function with repeted parameters is not allowed.
+
+(13) Run ./numerics ./testcases/input13.txt
+     You will see that it prints something like this:
+
+     define(MM YY z) = (* (% (/ YY (+ z YY) ) (- YY (* 3 z) ) ) z )	#nested expression 
+     defined MM(YY z)
+     define(g x y z) = (/ (+ x (* y 3) ) (-(%10 z) y) )
+     defined g(x y z)
+     define(h a b) = (+ (g 1 a b) (sin b) )	#one-layer calls
+     defined h(a b)
+     define(f x y) = (* x (h x y) )	     	#nested calls
+     Illegal func def: attempt to call a function which was defined by calling another function
+     Could not parse expression.
+
+     , which is correct because:
+     a. Using nested expression in function definitions is allowed.
+     b. A function can be defined by calling another function. However, calling another function
+     	which was defined by calling another function (nested calls) is not allowed.
+
+(14) Run ./numerics ./testcases/input14.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (/ y x)
+     defined f(x y)
+     define(g x y) = (+ x y)
+     defined g(x y)
+     define(h x) = (g (f x 10) x)
+     Illegal func def: invalid parameter '(f' on rhs func call
+     Could not parse expression.
+
+     , which is correct because when calling a function in define, using another function call
+     as a function's parameter is not allowed, which means only numbers and parameters can be
+     used as a function call's parameter.
+
+(15) Run ./numerics ./testcases/input15.txt
+     You will see that it prints something like this:
+
+     define(g x y) = (+ ( * x (-y 3)) 3.5)
+     defined g(x y)
+     define(f x y) = (+ ( * x (-y 3)) )
+     Illegal func def error: unknown operand ''
+     Could not parse expression.
+
+     , which is correct because loosing right hand side in a nested expression is not allowed.
+
+(16) Run ./numerics ./testcases/input16.txt
+     You will see that it prints something like this:
+
+     define(f x) = (+ (*x (+ x 5) (- x 3) ) ( * x x) )
+     Illegal func def: on rhs expected ) but found (- x 3) ) ( * x x) )
+     
+     Could not parse expression.
+
+     , which is correct because an operation (+-*/%) can only follows two operands (left hand
+     side and right and side).
+
+(17) Run ./numerics ./testcases/input17.txt
+     You will see that it prints something like this:
+
+     define(f x) = (+ (*x 3 x ) ( * x x) )
+     Illegal func def: on rhs expected ) but found x ) ( * x x) )
+
+     Could not parse expression.
+
+     , which is correct because an operation (+-*/%) can only follows two operands (left hand
+     side and right and side).
+
+(18) Run ./numerics ./testcases/input18.txt
+     You will see that it prints something like this:
+
+     define(g x y) = (+ x (- y 3))
+     defined g(x y)
+     define(f x y) = (+ x (- y z))
+     Illegal func def error: unknown operand 'z'
+     Could not parse expression.
+
+     , which is correct because an undefined parameter is used in a function definition.
+
+(19) Run ./numerics ./testcases/input19.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ x y)
+     defined f(x y)
+     test(f 1 5) 6
+     f(1 5) = 6 [correct]
+     test(f 1 5) 6.0
+     f(1 5) = 6 [correct]
+     test(f 5 2) 5.5
+     f(5 2) = 5.5 [INCORRECT: expected 7]
+     define(g xy) = (+ x y) #attempt to consiter g as g(x y) = (x + y)
+     Illegal func def error: unknown operand 'x'
+     Could not parse expression.
+
+     , which is correct because define(f x y) indicates f has two parameters x, y while
+     define(g xy) has one parameter xy.
+
+(20) Run ./numerics ./testcases/input20.txt
+     You will see that it prints something like this:
+
+     define(f x) = ((+x 1))
+     Illegal func def: undefined operator or function '(+x' on rhs
+     Could not parse expression.
+
+     , which means redundent parentheses over an expression is not allowed. In other words,
+     an left parenthesis can only be followed by an operator or a function name.
+
+(21) Run ./numerics ./testcases/input21.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (/ (* x 3) (- y x) )
+     defined f(x y)
+     define(g a) = (f a 1)
+     defined g(a)
+     test(f 1 2) 6
+     f(1 2) = 6 [INCORRECT: expected 3]
+     test(g 3.) -4.5
+     g(3) = -4.5 [correct]
+     define(h s) = (f s 1 s)
+     Illegal func def: invalid func call on rhs. expected ) bur found s)
+
+     Could not parse expression.
+
+     , which is correct because in the define statment the number of parameters must be
+     consistent with the function we're calling
+
+(22) Run ./numerics ./testcases/input22.txt
+     You will see that it prints something like this:
+
+     #one parameter
+     define (f x) = (* (+ x 2) x)
+     defined f(x)
+     test(f 2) 8
+     f(2) = 8 [correct]
+     test (f 3.2) 16.64
+     f(3.2) = 16.64 [correct]
+     test     (       f     4.5 )    29.25
+     f(4.5) = 29.25 [correct]
+     test( f     3.2)16.64
+     f(3.2) = 16.64 [correct]
+
+     , which is correct because arbitary number of spaces is allowed in test statements.
+
+(23) Run ./numerics ./testcases/input23.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (/ (+ x y) (* 10 x))
+     defined f(x y)
+     test(f -1 -5.5) 0.65
+     f(-1 -5.5) = 0.65 [correct]
+     test    (    f    -1     -5.5   )0.65
+     f(-1 -5.5) = 0.65 [correct]
+     test(f -1 -5.5) 1
+     f(-1 -5.5) = 1 [INCORRECT: expected 0.65]
+     test(f -1) 1  
+     Illegal test statement: found non-number symbal or the param number does not match in
+     the first argument (lhs)
+     Could not parse expression.
+
+     , which is correct because:
+     a. Arbitary number of spaces is allowed in any test statement.
+     b. Test statements can successfully test a 2-parameter function's value, which is defined
+     	by pure nested expressions.
+     c. In test statements parameter numbers of a function must be consistent with the function
+     	that is testing.
+
+(24) Run ./numerics ./testcases/input24.txt
+     You will see that it prints something like this:
+
+     #multi-parameter & nested expressions
+     define (g x y z) =    (+  (    *   x y   )(-z   3  )   )
+     defined g(x y z)
+     test (g 2.8 4.1 1.2) 3
+     g(2.8 4.1 1.2) = 3 [INCORRECT: expected 9.68]
+       test (g 2.8 4.1 1.2) 9.68
+     g(2.8 4.1 1.2) = 9.68 [correct]
+        define (k x y z w) = ( /  (+  (* x z) (-3  (/ w   2) )) (- (/ (*4 x) 10.5) y) )
+     defined k(x y z w)
+     test(k 1 2 3 4) -2
+     k(1 2 3 4) = -2 [INCORRECT: expected -2.47059]
+     test(k 1 2 3 4) (g 1 2 3)
+     Illegal test statement: in the second argument (rhs) expeced a number but found (g 1 2 3)
+
+     Could not parse expression.
+
+     , which is correct because:
+     a. Arbitary number of spaces is allowed in any define and test statements.
+     b. Test staments can successfully test a multi-parameter function's value, which is
+     	defined by pure nested expressions
+     c. Test statements can NOT accept a function or expression as the second parameter. It
+        can only accept numbers.
+	
+(25) Run ./numerics ./testcases/input25.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ x y)
+     defined f(x y)
+     test(f 1 2.2) 3.2
+     f(1 2.2) = 3.2 [correct]
+     test(f 1 2 3) 10
+     Illegal test statement: in the first argument (lhs) expected ) but found 3) 10
+
+     Could not parse expression.
+
+     , which is correct because in test staments parameter numbers must be consistent with the
+     function that is testing.
+
+(26) Run ./numerics ./testcases/input26.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ x y)
+     defined f(x y)
+     test(f 3 2) 
+     Illegal test statement: in the second argument (rhs) expeced a number but found 
+     Could not parse expression.
+
+     , which is correct because the second parameter is not found in the test statment.
+
+(27) Run ./numerics ./testcases/input27.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (* x y)
+     defined f(x y)
+     test(f x
+     Illegal test statement: found non-number symbal or the param number does not match in
+     the first argument (lhs)
+     Could not parse expression.
+
+     , which is correct because it misses a right parenthesis in the test statement (the test
+     statement is incomplete), which is not allowed.
+
+(28) Run ./numerics ./testcases/input28.txt
+     You will see that it prints something like this:
+
+     test (sin 0)  0
+     sin(0) = 0 [correct]
+     test (sin 1.57)  1
+     sin(1.57) = 1 [INCORRECT: expected 1]
+     test (sin 3.14)  0
+     sin(3.14) = 0 [INCORRECT: expected 0.00159265]
+
+     test (cos 0) 1
+     cos(0) = 1 [correct]
+     test (cos 1.57) 0
+     cos(1.57) = 0 [INCORRECT: expected 0.000796327]
+     test (cos 3.14) -1
+     cos(3.14) = -1 [INCORRECT: expected -0.999999]
+
+     , which is correct because:
+     a. Pre-defined functions are defined in the start of the program and test statements can
+     successfully test sin and cos functions.
+     b. When test (sin 1.57), because 1.57 is close to but not equal to pi/2, the test results
+     	shows our guess does not match the correct answer even though the expected answer seems
+	to be the same as our guess (the expected value was rounded in the and printed out).
+
+(29) Run ./numerics ./testcases/input29.txt
+     You will see that it prints something like this:
+
+     test (sqrt 2) 1.4
+     sqrt(2) = 1.4 [INCORRECT: expected 1.41421]
+     test (sqrt 16) 4
+     sqrt(16) = 4 [correct]
+     test (sqrt -1) -1
+     Illegal test statement: Invalid sqrt: attempt to sqrt a negative value
+     Could not parse expression.
+
+     , which is correct because:
+     a. The test statement can successfully test sqrt function.
+     b. We can't sqrt a negative value
+
+(30) Run ./numerics ./testcases/input30.txt
+     You will see that it prints something like this:
+
+     test(ln 1) 0
+     ln(1) = 0 [correct]
+     test(ln 2.78) 1
+     ln(2.78) = 1 [INCORRECT: expected 1.02245]
+     test(ln 10) 3
+     ln(10) = 3 [INCORRECT: expected 2.30259]
+     test(ln 0) 1
+     Illegal test statement: Invalid sqrt: attempt to ln a zero or negative value
+     Could not parse expression.
+
+     , which is correct because:
+     a. The test statement can successfully test ln function.
+     b. We cannot ln a value which is less or equal to zero.
+
+(31) Run ./numerics ./testcases/input30.txt
+     You will see that it prints something like this:
+
+     test (pow 0 10) 0
+     pow(0 10) = 0 [correct]
+     test (pow 10 0) 1
+     pow(10 0) = 1 [correct]
+     test (pow -1 3) -1
+     pow(-1 3) = -1 [correct]
+     test (pow 1.5 2) 2.25
+     pow(1.5 2) = 2.25 [correct]
+     test (pow 2.3 -1.5) 0.28
+     pow(2.3 -1.5) = 0.28 [INCORRECT: expected 0.286687]
+     test (pow 2.3 -1.5) 0.286687
+     pow(2.3 -1.5) = 0.286687 [INCORRECT: expected 0.286687]
+
+     , which is correct because:
+     a. The test statement can successfully test pow function.
+     b. In the last test statement, though our guess seems to be the same as the expected answer
+     	, they are still doesn't match. (the expected value is rounded and
+	expected_value - guess_value >= 1e-12)
+
+(32) Run ./numerics ./testcases/input32.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ x y)
+     defined f(x y)
+     test(f 3 a) 3
+     Illegal test statement: found non-number symbal or the param number does not match in the
+     first argument (lhs)
+     Could not parse expression.
+
+     , which is correct because in a test statement a function's parameter can only be a number
+     or a function call.
+
+(33) Run ./numerics ./testcases/input33.txt
+     You will see that it prints something like this:
+
+     define (div arga argb) = (/ arga argb)
+     defined div(arga argb)
+     test(div 1 0) 100
+     Illegal test statement: Invalid division: denominator is 0
+     Could not parse expression.
+
+     , which is correct because in a division operation the denominator should not be zero.
+
+(34) Run ./numerics ./testcases/input34.txt
+     You will see that it prints something like this:
+
+     define (modulo arga argb) = ( % arga  argb  )
+     defined modulo(arga argb)
+     test   (modulo 35 8) 3
+     modulo(35 8) = 3 [correct]
+     test   (modulo -15 9) -6
+     modulo(-15 9) = -6 [correct]
+     test   (modulo -15 -9) -6
+     modulo(-15 -9) = -6 [correct]
+     test   (modulo 15 -9)  6
+     modulo(15 -9) = 6 [correct]
+
+     , which is correct because the test statments can successfully test functions build with
+     modulo operatoions.
+
+(35) Run ./numerics ./testcases/input35.txt
+     You will see that it prints something like this:
+
+     define (modulo arga argb) = ( % arga  argb  )
+     defined modulo(arga argb)
+     test   (modulo 2 0) 0
+     Illegal test statement: Invalid modulo: denominator is 0
+     Could not parse expression.
+
+     , which is correct because modulo operations cannot accept a zero denominator.
+
+(36) Run ./numerics ./testcases/input36.txt
+     You will see that it prints something like this:
+
+     define (modulo arga argb) = ( % arga  argb  )
+     defined modulo(arga argb)
+     test   (modulo 20 1.5) 1
+     Illegal test statement: Invalid modulo: invalid double operands found
+     Could not parse expression.
+
+     , which is correct because modulo operations can only accept integer operands.
+
+(37) Run ./numerics ./testcases/input37.txt
+     You will see that it prints something like this:
+
+     define (modulo arga argb) = ( % arga  argb  )
+     defined modulo(arga argb)
+     test   (modulo 9.0000000000001 2.0000000000001) 1
+     modulo(9 2) = 1 [correct]
+     test   (modulo 9.000000000001 2.000000000001) 1
+     Illegal test statement: Invalid modulo: invalid double operands found
+     Could not parse expression.
+
+     , which is correct because the precision of double is 1e-12 so the numbers in the first
+     test statement can be treated as integers but that of the second test statement can not.
+
+(38) Run ./numerics ./testcases/input38.txt
+     You will see that it prints something like this:
+
+     define(div x y) = (/ x y)
+     defined div(x y)
+     test(div 0.000000000009 0.000000000001) 9
+     div(9e-12 1e-12) = 9 [correct]
+     test(div 0.000000000009 0.0000000000009) 10
+     Illegal test statement: Invalid division: denominator is 0
+     Could not parse expression.
+
+     , which is correct because the precision of double is 1e-12 so the denominator in the
+     first test statment is greater than zero while that of the second statement is treated
+     as zero (is less then 1e-12).
+
+(39) Run ./numerics ./testcases/input39.txt
+     You will see that it prints something like this:
+
+     test(ln -1) 0
+     Illegal test statement: Invalid sqrt: attempt to ln a zero or negative value
+     Could not parse expression.
+
+     , which is a suppliment of testcase (30) that we cannot ln a negative value.
+
+(40) Run ./numerics ./testcases/input40.txt
+     You will see that it prints something like this:
+
+     test(ln 0.000000000001) 0
+     ln(1e-12) = 0 [INCORRECT: expected -27.631]
+     test(ln 0.0000000000009) 0
+     Illegal test statement: Invalid sqrt: attempt to ln a zero or negative value
+     Could not parse expression.
+
+     , which is correct because the precision of double is 1e-12 so the argument in the first
+     test statement is greater than zero while that of the second tatement is treated as zero.
+
+(41) Run ./numerics ./testcases/input41.txt
+     You will see that it prints something like this:
+
+     test(pow 2 10000000) inf
+     pow(2 1e+07) = inf [INCORRECT: expected inf]
+     test(pow 2 0) nan
+     pow(2 0) = nan [INCORRECT: expected 1]
+
+     , which is correct because:
+     a. 'inf' and 'nan' can also be the second argument of a test statement.
+     b. Since 'inf' is infinity and therefore undetermined, our guess will never match the
+     	expeced value.
+     c. Since 'nan' is undetermined, our guess will never match the expected value.
+
+(42) Run ./numerics ./testcases/input42.txt
+     You will see that it prints something like this:
+
+     test(pow 2 10 1) 0
+     Illegal test statement: in the first argument (lhs) expected ) but found 1) 0
+
+     Could not parse expression.
+
+     , which is correct because when testing a pre-define function the number of the function's
+     parameters should also be consistent to the pre-define function we're testing.
+
+
+(43) Run ./numerics ./testcases/input43.txt
+     You will see that it prints something like this:
+
+     test(sin) 0
+     Illegal test statement: expect a space after func name but found ) 0
+
+     Could not parse expression.
+
+     , which is correct because when testing a pre-define function the number of the function's
+     parameters should also be consistent to the pre-define function we're testing.
+
+(44) Run ./numerics ./testcases/input44.txt
+     You will see that it prints something like this:
+
+     test(pow 2) 0
+     Illegal test statement: found non-number symbal or the param number does not match in the
+     first argument (lhs)
+     Could not parse expression.
+
+     , which is correct because when testing a pre-define function the number of the function's
+     parameters should also be consistent to the pre-define function we're testing.
+
+(45) Run ./numerics ./testcases/input45.txt
+     You will see that it prints something like this:
+     
+     define(f x y z) = (/ (pow x 10) (* y (sqrt z) ) )
+     defined f(x y z)
+     define(g a b) = (+ (sin a) (/10 (sin b)))
+     defined g(a b)
+     define(h a b c) = (+ (ln b) (/ (-c (* 10 a) ) (ln 8) ) )
+     defined h(a b c)
+     define(t x y) = (+ x y)
+     defined t(x y)
+
+     test(f 1 2 4) 0.25 
+     f(1 2 4) = 0.25 [correct]
+     test(g 2.1 -1) -10 
+     g(2.1 -1) = -10 [INCORRECT: expected -11.0207]
+     test(h -1 8.5 -4.5) 4.7
+     h(-1 8.5 -4.5) = 4.7 [INCORRECT: expected 4.78501]
+
+     test(f (t 2 1) 2 4) 14762.25
+     f(t(2 1) 2 4) = 14762.2 [correct]
+     test(g (t -1 -5.5) (g 2.1 -1) ) 10.8
+     g(t(-1 -5.5) g(2.1 -1)) = 10.8 [INCORRECT: expected 10.8664]
+
+     , which is correct becase:
+     a. Test statements can successfully nested test functions defined by calling other
+     	functions.
+     b. Test statement can accept a function call as a parameter of the function we're about
+     	to test.
+
+(46) Run ./numerics ./testcases/input46.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (* x y)
+     defined f(x y)
+     define(g a b) = (/ a b)
+     defined g(a b)
+
+     test(g (g (f a b) 10) ) 10
+     Illegal test statement: found non-number symbal or the param number does not match in
+     the first argument (lhs)
+     Could not parse expression.
+
+     , which is correct because a test statement does not allow nested function calls.
+
+(47) Run ./numerics ./testcases/input47.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (* x y)
+     defined f(x y)
+     test(f (+ 1 2) 3) 1
+     Illegal test statement: attempt to call a undefined func '+'
+     Could not parse expression.
+
+     , which is correct because a test statement does not allow expressions as the function's
+     parameter.
+
+(48) Run ./numerics ./testcases/input48.txt
+     You will see that it prints something like this:
+
+     define(f x y z) = (+ (* x y) (-z 3))  #define
+     defined f(x y z)
+     test(f 3 4.2 5) 14.6  #test
+     f(3 4.2 5) = 14.6 [correct]
+     test(f -1 9.2 6) -6.2
+     f(-1 9.2 6) = -6.2 [correct]
+     define (g a b)=(/a b)
+     defined g(a b)
+     test(f (g 4 2) ( g 12 4  )   5.5  )   8.5   #test with function call
+     f(g(4 2) g(12 4) 5.5) = 8.5 [correct]
+
+     , which is another testcase for test statements which tests functions defined by
+     pure nested expressions.
+
+
+(49) Run ./numerics ./testcases/input49.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ (sin x) (* y (cos x) ))
+     defined f(x y)
+     define(g x y) = (+ x x)
+     defined g(x y)
+     test (g (sqrt 16) 3.2) 8
+     g(sqrt(16) 3.2) = 8 [correct]
+     test (f (g 3.2 1) 6.28 ) 1.5
+     f(g(3.2 1) 6.28) = 1.5 [INCORRECT: expected 6.35375]
+
+     , which is another testcase for testing statements.
+
+(50) Run ./numerics ./testcases/input50.txt
+     You will see that it prints something like this:
+
+     numint sin 0.01 0 1
+     0.459694
+     numint sin 0.001 0 1
+     0.459698
+     mcint sin 10000 0 1
+     0.455851
+     mcint sin 100000 0 1
+     0.458521
+
+     define(g x y) = (+ (ln x) (pow 10 y))
+     defined g(x y)
+     numint g 0.01 3 3.1 2.3 2.4
+     64.0308
+     numint g 0.0005 3 3.1 2.3 2.4
+     51.7267
+     mcint g 10000 3 3.1 2.3 2.4
+     51.6441
+     mcint g 100000 3 3.1 2.3 2.4
+     51.702
+
+     define(h x y) = (+ x (pow y 2))
+     defined h(x y)
+     numint h 0.01 10 10.2 2.3 2.5
+     0.700869
+     numint h 0.001 10 10.2 2.3 2.5
+     0.641013
+     mcint h 10000 10 10.2 2.3 2.5
+     0.63454
+     mcint h 100000 10 10.2 2.3 2.5
+     0.634499
+
+     define(f x y z) = (+ (* x y) (-z 3))  #define
+     defined f(x y z)
+     numint f 0.01 0 0.2 0 0.3 0 0.1
+     -0.019338
+     mcint f 10000 0 0.2 0 0.3 0 0.1
+     -0.0176018
+
+     , which is correct because:
+     a. 'numint' and 'mcint' support integration of multi-dimension functions.
+     b. Though there are a little differences between the integrated value of nunint and
+     	mcint over the same function, they are close enough so that we can consider the
+	integration is correct.
+     c. For the same function, as the thrid argument (width) of numint goes smaller, the
+     	integration will become more precise.
+     d. For the same function, as the thrid argument (number of sample points) of mcint
+        goes smaller, the integration will become more precise.
+
+(51) Run ./numerics ./testcases/input51.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ (sin x) (* y (cos x) ))
+     defined f(x y)
+     numint f 0.01 1.5 1.7 2.2 2.3
+     0.0205076
+     numint f 0.001 1.5 1.7 2.2 2.3
+     0.0189033
+     mcint f 10000 1.5 1.7 2.2 2.3
+     0.0186466
+     mcint f 100000 1.5 1.7 2.2 2.3
+     0.018646
+
+     , which is also a testcase for 'numint' and 'mcint', and has the same reasons to be
+     correct as testcase (50).
+
+(52) Run ./numerics ./testcases/input52.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ (sin x) y)
+     defined f(x y)
+     numint g 0.01 1 1.1 2 2.1
+     Illegal numint statement: attempt to call a undfined func 'g'
+     Could not parse expression.
+
+     , which is correct because you can't numint an undefined function.
+
+(53) Run ./numerics ./testcases/input53.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ (sin x) y)
+     defined f(x y)
+     mcint g 0.01 1 1.1 2 2.1
+     Illegal mcint statement: attempt to call a undfined func 'g'
+     Could not parse expression.
+
+     , which is correct because you can't mcint an undefined function.
+
+(54) Run ./numerics ./testcases/input54.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ (sin x) y)
+     defined f(x y)
+     numint f -0.001 1 1.1 2 2.1
+     Illegal numint statement: width must be a positive number
+     Could not parse expression.
+
+     , which is correct because in numint width must be a positive number.
+     
+(55) Run ./numerics ./testcases/input55.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ (sin x) y)
+     defined f(x y)
+     mcint f 0 1 1.1 2 2.1
+     Illegal mcint statement: trial must be not less then 1
+     Could not parse expression.
+
+     , which is correct because in mcint the thrid argument (number of sample points)
+     must be equal or greater than 1 (the argument counts from 'mcint')
+
+(56) Run ./numerics ./testcases/input56.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ (sin x) y)
+     defined f(x y)
+     mcint f -1 1 1.1 2 2.1
+     Illegal mcint statement: trial must be not less then 1
+     Could not parse expression.
+
+     , which is correct because in mcint the thrid argument (number of sample points) must
+     be equal or greater than 1
+
+(57) Run ./numerics ./testcases/input57.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ (sin x) y)
+     defined f(x y)
+     mcint f 10.5 1 1.1 2 2.1
+     Illegal mcint statement: expect to end the line but found 2.1
+
+     Could not parse expression.
+
+     , which is correct because the third argument (number of sample point) cannot be a float
+     number. In this testcase, 3rd argument was parsed as '10', leaving '.5' as the fourth
+     argument, and that's why '2.1' cannot be parsed.
+
+(58) Run ./numerics ./testcases/input58.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ (sin x) y)
+     defined f(x y)
+     numint f 0.01a 1 1.1 2 2.1
+     Illegal numint statement: attempt to assign a non-number to an argument
+     Could not parse expression.
+
+     , which is correct because in numint from the third argument, all argument must be numbers.
+     (the argument counts from 'numint')
+
+(59) Run ./numerics ./testcases/input59.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ (sin x) y)
+     defined f(x y)
+     mcint f 10000a 1 1.1 2 2.1
+     Illegal mcint statement: attempt to assign a non-number to an argument
+     Could not parse expression.
+
+     , which is correct because in mcint from the third argument, all argument must be numbers.
+
+(60) Run ./numerics ./testcases/input60.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ (sin x) y)
+     defined f(x y)
+     numint f 0.01 1 1.1a 2 2.1
+     Illegal numint statement: attempt to assign a non-number to an argument
+     Could not parse expression.
+
+     , which is correct because in numint from the third argument, all argument must be numbers.
+
+(61) Run ./numerics ./testcases/input61.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ (sin x) y)
+     defined f(x y)
+     mcint f 10000 1 1.1 a2 2.1
+     Illegal mcint statement: attempt to assign a non-number to an argument
+     Could not parse expression.
+
+     , which is correct because in mcint from the third argument, all argument must be numbers.
+
+(62) Run ./numerics ./testcases/input62.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ (sin x) y)
+     defined f(x y)
+     numint f 0.0000000000009 1 1.1 2 2.1
+     Illegal numint statement: width must be a positive number
+     Could not parse expression.
+
+     , which is correct because:
+     a. In numint the third argument (width) must be a positive number.
+     b. The precision of doulbe is 1e-12, so 0.0000000000009 (less than 1e-12) is considered
+     	as zero.
+
+(63) Run ./numerics ./testcases/input63.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ (sin x) y)
+     defined f(x y)
+     numint f  
+     Illegal numint statement: attempt to assign a non-number to an argument
+     Could not parse expression.
+
+     , which is correct because the numint statement is not complete.
+
+(64) Run ./numerics ./testcases/input64.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ (sin x) y)
+     defined f(x y)
+     mcint f  
+     Illegal mcint statement: attempt to assign a non-integer to trial
+     Could not parse expression.
+
+     , which is correct because the mcint statement is not complete.
+
+(65) Run ./numerics ./testcases/input65.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ (sin x) y)
+     defined f(x y)
+     numint f 0.01 0  
+     Illegal numint statement: end or invalid input in the mid of argument assignment
+     Could not parse expression.
+
+     , which is correct because the numint statement is not complete.
+
+(66) Run ./numerics ./testcases/input66.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ (sin x) y)
+     defined f(x y)
+     mcint f 10000 0.1 
+     Illegal mcint statement: end or invalid input in the mid of argument assignment
+     Could not parse expression.
+     
+     , which is correct because the mcint statement is not complete.
+
+(67) Run ./numerics ./testcases/input67.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ (sin x) y)
+     defined f(x y)
+     numint f 0.01 1.1 1.2 2.1 2.2 2.3 2.4
+     Illegal numint statement: expect to end the line but found 2.3 2.4
+
+     Could not parse expression.
+
+     , which is correct because the arguments is too much (high than
+     3 + 2 * (num of parameters)).
+
+(68) Run ./numerics ./testcases/input68.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ (sin x) y)
+     defined f(x y)
+     mcint f 10000 1.1 1.2 2.1 2.2 2.3 2.4
+     Illegal mcint statement: expect to end the line but found 2.3 2.4
+
+     Could not parse expression.
+
+     , which is correct because the arguments is too much (high than
+     3 + 2 * (num of parameters)).
+
+(69) Run ./numerics ./testcases/input69.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ (sin x) y)
+     defined f(x y)
+     numint f 0.01 1.2 1.2 2.1 2.2
+     Illegal numint statement: invalid range (start >= end)
+     Could not parse expression.
+
+     , which is correct because the range of x is invalid (start >= end).
+
+(70) Run ./numerics ./testcases/input70.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ (sin x) y)
+     defined f(x y)
+     numint f 0.01 1.2 1.3 2.2 2.1
+     Illegal numint statement: invalid range (start >= end)
+     Could not parse expression.
+
+     , which is correct because the range of y is invalid (start >= end).
+
+(71) Run ./numerics ./testcases/input71.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ (sin x) y)
+     defined f(x y)
+     mcint f 10000 1.2 1.1 2.1 2.2
+     Illegal mcint statement: invalid range (start >= end)
+     Could not parse expression.
+
+     , which is correct because the range of x is invalid (start >= end).
+
+(72) Run ./numerics ./testcases/input72.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ (sin x) y)
+     defined f(x y)
+     mcint f 10000 1.1 1.2 2.1 2.1
+     Illegal mcint statement: invalid range (start >= end)
+     Could not parse expression.
+
+     , which is correct because the range of y is invalid (start >= end).
+
+(73) Run ./numerics ./testcases/input73.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ (sin x) y)
+     defined f(x y)
+       numint     f   0.01   1.1  1.2     2.1     2.2
+     0.0337411
+
+     , which is correct because 'arbitary spaces' is supported in 'numint'.
+
+(74) Run ./numerics ./testcases/input74.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+ (sin x) y)
+     defined f(x y)
+       mcint     f   10000   1.1  1.2     2.1     2.2
+     0.030601
+
+     , which is correct because 'arbitary spaces' is supported in 'mcint'.
+
+(75) Run ./numerics ./testcases/input75.txt
+     You will see that it prints something like this:
+
+     define (f x y) = (* (pow x 2) (sqrt y))
+     defined f(x y)
+          test (   f    0       25   )0
+     f(0 25) = 0 [correct]
+        test(f   1     25)     5
+     f(1 25) = 5 [correct]
+     test      (              f      1     25        )     5
+     f(1 25) = 5 [correct]
+
+     , which is correct because 'arbitary spaces' is supported in 'test'.
+
+(76) Run ./numerics ./testcases/input76.txt
+     You will see that it prints something like this:
+
+     123
+     Could not parse expression.
+
+     , which is correct because invalid command was input.
+     
+(77) Run ./numerics ./testcases/input77.txt
+     You will see that it prints something like this:
+
+
+       defi
+     Illegal define identifier
+     Could not parse expression.
+
+     , which is correct because the program detects 'defi' and assumes a 'define'
+     command will be input, however, the rest of the words does not match.
+     
+(78) Run ./numerics ./testcases/input78.txt
+     You will see that it prints something like this:
+
+     numi
+     Illegal numint statement: invalid numint identifier
+     Could not parse expression.
+
+     , which is correct because the program detests 'numi' and assumes a 'numint'
+     command will be input, however, the rest of the words does not match.
+
+(79) Run ./numerics ./testcases/input79.txt
+     You will see that it prints something like this:
+
+      tes
+     Illegal test statement: invalid test identifier
+     Could not parse expression.
+
+     , which is correct because the program detests 'tes' and assumes a 'test'
+     command will be input, however, the rest of the words does not match.
+
+(80) Run ./numerics ./testcases/input80.txt
+     You will see that it prints something like this:
+
+     mci
+     Illegal mcint statement: invalid mcint identifier
+     Could not parse expression.
+
+     , which is correct because the program detests 'mci' and assumes a 'mcint'
+     command will be input, however, the rest of the words does not match.
+
+(81) Run ./numerics ./testcases/input81.txt
+     You will see that it prints something like this:
+
+     test (pow 2
+     Illegal test statement: found non-number symbal or the param number does not match in
+     the first argument (lhs)
+     Could not parse expression.
+
+     , which is correct because the test statement is incomplete.
+
+(82) Run ./numerics ./testcases/input82.txt
+     You will see that it prints something like this:
+
+     define(f x y z) = (+ (* x y) (-z 3))
+     defined f(x y z)
+     test(f 3 4.2 5) 14.6
+     f(3 4.2 5) = 14.6 [correct]
+     test(f 3 4.2 5) 14.600000000001
+     f(3 4.2 5) = 14.6 [correct]
+     test(f 3 4.2 5) 14.6000000000009
+     f(3 4.2 5) = 14.6 [correct]
+
+     , which is correct because the precision of double is 1e-12 and the guess value in
+     the second test statement is in that precision, which doesn't match the correct value,
+     while the guess value in third test statement is out of that precision, which therefore
+     match the correct value.
+     
+(83) Run ./numerics ./testcases/input83.txt
+     You will see that it prints something like this:
+
+     define (h h x) = (+ h x)
+     Illegal func def: input repeated parameter(s)
+     Could not parse expression.
+
+     , which is correct because the first parameter collide with te function name, which is
+     not allowed.
+
+(84) Run ./numerics ./testcases/input84.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (* x y)
+     defined f(x y)
+     test(g 1 2) 3
+     Illegal test statement: attempt to call a undefined func 'g'
+     Could not parse expression.
+
+     , which is correct because you cannot test a undefined function.
+
+(85) Run ./numerics ./testcases/input85.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (* (ln x)(sqrt y) )
+     defined f(x y)
+     numint f 0.01 .3.1 3.2 6 6.1
+     Illegal numint statement: invalid range (start >= end)
+     Could not parse expression.
+
+     , this testcase aims at observing the impact of inserting multiple dots in a double
+     number. In this case the program reads .3 as the fourth argument (lower bound of x)
+     and then reads .1 as the fifth argument (upper bound of x). Since .3 is greater
+     than .1, this integrate range is invalid.
+
+(86) Run ./numerics ./testcases/input86.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (* (ln x)(sqrt y) )
+     defined f(x y)
+     numint f 0.01 3.1 3.2 6 7..2
+     Illegal numint statement: expect to end the line but found .2
+
+     Could not parse expression.
+
+     , this testcase aims at observing the impact of inserting multiple dots in a double
+     number. In this case the program read 7. as the last argument (upper bound of y) and
+     then detects another '.' is waitint for reading. Since all of the arguments has been
+     read, '.' is considered as a invalid input here.
+
+(87) Run ./numerics ./testcases/input87.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (* (ln x)(sqrt y) )
+     defined f(x y)
+     mcint f 10000 3.1 3.2. 6 6.2
+     Illegal mcint statement: attempt to assign a non-number to an argument
+     Could not parse expression.
+
+     , this testcase aims at observing the impact of inserting multiple dots in a double
+     number. In this case the program reads 3.2 as the fifth argument (upper bound of x)
+     and then detect another '.' is waiting for reading. Since a space is right after it,
+     this dot is considered as a invalid non-number input.
+
+(88) Run ./numerics ./testcases/input88.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (* (ln x)(sqrt y) )
+     defined f(x y)
+     mcint f 10000. 3.1 3.2 6 6.2
+     Illegal mcint statement: attempt to assign a non-number to an argument
+     Could not parse expression.
+
+     , this testcase aims at observing the impact of inserting multiple dots in a long
+     integer number. In this case the program reads 10000 as the third argument (number
+     of sample points) and then detect a '.' is waiting for reading. This dot is
+     considered as a invalid non-number input this time.
+
+(89) Run ./numerics ./testcases/input89.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+(pow x 3) (pow y 2))
+     defined f(x y)
+     numint f 0.01 3.1 3.2 nan 6.1
+     0
+
+     , which is correct because:
+     a. 'nan' can be considered as a legal double number in numint.
+     b. Since 'nan' is a undetermined number, the result is uncertain and depend on the
+     	algorithm in the program, and for my program the result is also zero.
+
+(90) Run ./numerics ./testcases/input90.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+(pow x 3) (pow y 2))
+     defined f(x y)
+     numint f 0.01 3.1 3.2 inf 6.1
+     Illegal numint statement: invalid range (start >= end)
+     Could not parse expression.
+
+     , which is correct because:
+     a. 'inf' can be considered as a legal double number in numint, which is infinity.
+     b. Since infinity is greater than 6.1, the range of y is invalid.
+
+(91) Run ./numerics ./testcases/input91.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+(pow x 3) (pow y 2))
+     defined f(x y)
+     mcint f nan 3.1 3.2 6.0 6.1
+     Illegal mcint statement: attempt to assign a non-integer to trial
+     Could not parse expression.
+
+     , which is correct because 'nan' is a illegal long integer number in mcint.
+
+(92) Run ./numerics ./testcases/input92.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+(pow x 3) (pow y 2))
+     defined f(x y)
+     mcint f inf 3.1 3.2 6.0 6.1
+     Illegal mcint statement: attempt to assign a non-integer to trial
+     Could not parse expression.
+
+     , which is correct because 'inf' is a illegal long integer number in mcint.
+
+(93) Run ./numerics ./testcases/input93.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+(pow x 3) (pow y 2))
+     defined f(x y)
+     mcint f 10000 nan 3.2 6.0 6.1
+     nan
+
+     , which is correct because:
+     a. 'nan' can be considered as a legal double number in mcint.
+     b. Since 'nan' is a undetermined number, the result is uncertain and depend on the
+     	algorithm in the program, and for my program the result is also a 'nan'.
+
+(94) Run ./numerics ./testcases/input94.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+(pow x 3) (pow y 2))
+     defined f(x y)
+     mcint f 10000 inf 3.2 6.0 6.1
+     Illegal mcint statement: invalid range (start >= end)
+     Could not parse expression.
+
+     a. 'inf' can be considered as a legal double number in mcint, which is infinity.
+     b. Since infinity is greater than 3.2, the range of x is invalid.
+
+     As a result, take nan or inf as an argument of numint of mcint will cause a uncertain
+     result or may take infinite time to compute.
+
+(95) Run ./numerics ./testcases/input95.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+(pow x 3) (pow y 2))
+     defined f(x y)
+     test(f nan 1) nan
+     f(nan 1) = nan [INCORRECT: expected nan]
+
+     , which is correct because:
+     a. 'nan' can be considered as a legal double number in a test statement.
+     b. Since nan is a undetermined number, the guess value will never match
+     	the expected value.
+
+(96) Run ./numerics ./testcases/input96.txt
+     You will see that it prints something like this:
+
+     define(f x y) = (+(pow x 3) (pow y 2))
+     defined f(x y)
+     test(f inf 1) inf
+     f(inf 1) = inf [INCORRECT: expected inf]
+
+     , which is correct because:
+     a. 'inf' can be considered as a legal double number in a test statement.
+     b. Since inf is considered as infinity, which does not have a certain value,
+     	the guess value will never match the expected value.
+
+(97) Run ./numerics ./testcases/input97.txt
+     You will see that it prints something like this:
+
+     test(* 1 2) 3
+     Illegal test statement: attempt to call a undefined func '*'
+     Could not parse expression.
+
+     , in this testcase a non-alphabet character '*' was input as a function name in
+     the test statement (and * is not a valid function name). Since no defined function
+     name matches '*', this test statement is invalid.

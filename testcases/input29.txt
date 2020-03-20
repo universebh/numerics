@@ -1,0 +1,4 @@
+test (sqrt 2) 1.4
+test (sqrt 16) 4
+test (sqrt -1) -1
+

@@ -1,0 +1,5 @@
+define(f x y z) = (+ (* x y) (-z 3))  #define
+test(f 3 4.2 5) 14.6  #test
+test(f -1 9.2 6) -6.2
+define (g a b)=(/a b)
+test(f (g 4 2) ( g 12 4  )   5.5  )   8.5   #test with function call

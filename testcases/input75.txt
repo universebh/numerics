@@ -1,0 +1,4 @@
+define (f x y) = (* (pow x 2) (sqrt y))
+     test (   f    0       25   )0
+   test(f   1     25)     5
+test      (              f      1     25        )     5

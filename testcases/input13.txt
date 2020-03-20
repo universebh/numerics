@@ -1,0 +1,4 @@
+define(MM YY z) = (* (% (/ YY (+ z YY) ) (- YY (* 3 z) ) ) z )	#nested expression 
+define(g x y z) = (/ (+ x (* y 3) ) (-(%10 z) y) )
+define(h a b) = (+ (g 1 a b) (sin b) )	#one-layer calls
+define(f x y) = (* x (h x y) )	     	#nested calls

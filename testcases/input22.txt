@@ -1,0 +1,7 @@
+#one parameter
+define (f x) = (* (+ x 2) x)
+test(f 2) 8
+test (f 3.2) 16.64
+test     (       f     4.5 )    29.25
+test( f     3.2)16.64
+

@@ -1,0 +1,5 @@
+define(f x y) = (/ (+ x y) (* 10 x))
+test(f -1 -5.5) 0.65
+test    (    f    -1     -5.5   )0.65
+test(f -1 -5.5) 1
+test(f -1) 1  

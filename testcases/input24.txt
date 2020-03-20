@@ -1,0 +1,8 @@
+#multi-parameter & nested expressions
+define (g x y z) =    (+  (    *   x y   )(-z   3  )   )
+test (g 2.8 4.1 1.2) 3
+  test (g 2.8 4.1 1.2) 9.68
+   define (k x y z w) = ( /  (+  (* x z) (-3  (/ w   2) )) (- (/ (*4 x) 10.5) y) )
+test(k 1 2 3 4) -2
+test(k 1 2 3 4) (g 1 2 3)
+

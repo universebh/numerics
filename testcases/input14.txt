@@ -1,0 +1,3 @@
+define(f x y) = (/ y x)
+define(g x y) = (+ x y)
+define(h x) = (g (f x 10) x)

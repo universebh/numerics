@@ -1,0 +1,1 @@
+define(sin x) = (/ (sin x) x)

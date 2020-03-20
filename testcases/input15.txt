@@ -1,0 +1,2 @@
+define(g x y) = (+ ( * x (-y 3)) 3.5)
+define(f x y) = (+ ( * x (-y 3)) )

@@ -1,0 +1,2 @@
+test(pow 2 10000000) inf
+test(pow 2 0) nan

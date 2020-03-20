@@ -1,0 +1,5 @@
+define(f x y) = (+ (sin x) (* y (cos x) ))
+numint f 0.01 1.5 1.7 2.2 2.3
+numint f 0.001 1.5 1.7 2.2 2.3
+mcint f 10000 1.5 1.7 2.2 2.3
+mcint f 100000 1.5 1.7 2.2 2.3

@@ -1,0 +1,5 @@
+define (modulo arga argb) = ( % arga  argb  )
+test   (modulo 35 8) 3
+test   (modulo -15 9) -6
+test   (modulo -15 -9) -6
+test   (modulo 15 -9)  6

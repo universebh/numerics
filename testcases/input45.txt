@@ -1,0 +1,11 @@
+define(f x y z) = (/ (pow x 10) (* y (sqrt z) ) )
+define(g a b) = (+ (sin a) (/10 (sin b)))
+define(h a b c) = (+ (ln b) (/ (-c (* 10 a) ) (ln 8) ) )
+define(t x y) = (+ x y)
+
+test(f 1 2 4) 0.25 
+test(g 2.1 -1) -10 
+test(h -1 8.5 -4.5) 4.7
+
+test(f (t 2 1) 2 4) 14762.25
+test(g (t -1 -5.5) (g 2.1 -1) ) 10.8

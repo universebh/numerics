@@ -1,0 +1,2 @@
+define (modulo arga argb) = ( % arga  argb  )
+test   (modulo 2 0) 0

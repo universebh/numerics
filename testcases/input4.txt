@@ -1,0 +1,3 @@
+define (f x) = x
+define (g x) = 92.5
+define (h x) = (x)

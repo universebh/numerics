@@ -1,0 +1,6 @@
+define(f x y) = (/ (* x 3) (- y x) )
+define(g a) = (f a 1)
+test(f 1 2) 6
+test(g 3.) -4.5
+define(h s) = (f s 1 s)
+
